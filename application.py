@@ -59,7 +59,8 @@ class Choices(db.Model):
     __tablename = "choices"
     choice_id = db.Column(db.Integer, primary_key=True)
     # Links to the users table user_id column. One to one relationship as each choice has only one user making it
-    choice = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
+    choice = db.Column(db.String, nullable=False)
+    user = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
     selected = db.Column(db.Boolean, nullable=False)
     date = db.Column(db.DateTime, nullable=False)
     # Links to the posts table post_id column. One to one relationship as each choice has only one post it relates to
@@ -73,13 +74,14 @@ db.session.add(jeff)
 db.session.commit()
 
 Example syntax for creating a new post
-week1 = Posts(post="This is a test post", date="06/04/19", optionA="optionA", optionB="optionB", optionC="optionC", optionD="optionD", enabled=True, winchoice="")
+date needs to be in the form of a python datetime object. Need to import datetime
+week1 = Posts(post="This is a test post", date=datetime.date(2019, 4, 6), optionA="optionA", optionB="optionB", optionC="optionC", optionD="optionD", enabled=True, winchoice="")
 db.session.add(week1)
 db.session.commit()
 
 Example syntax for creating a new choice
-choice1 = Choices(choice="A", selected=True, optionB="optionB", optionC="optionC", optionD="optionD", enabled=True, winchoice="")
-db.session.add(week1)
+choice1 = Choices(choice="A", selected=True, date=datetime.date(2019, 4, 6))
+db.session.add(choice1)
 db.session.commit()
 
 """

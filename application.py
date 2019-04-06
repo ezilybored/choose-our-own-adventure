@@ -41,6 +41,7 @@ class Users(db.Model):
     twitter = db.Column(db.String, nullable=False)
     # Links to the choices table. One to many relationship as user has many choices.
     choices = db.relationship('Choices', backref='user')
+    isadmin = db.Column(db.Boolean, nullable=False)
 
 class Posts(db.Model):
     __tablename__ = "posts"

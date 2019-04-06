@@ -60,7 +60,7 @@ class Choices(db.Model):
     choice_id = db.Column(db.Integer, primary_key=True)
     # Links to the users table user_id column. One to one relationship as each choice has only one user making it
     choice = db.Column(db.String, nullable=False)
-    user = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
+    choicemaker = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
     selected = db.Column(db.Boolean, nullable=False)
     date = db.Column(db.DateTime, nullable=False)
     # Links to the posts table post_id column. One to one relationship as each choice has only one post it relates to

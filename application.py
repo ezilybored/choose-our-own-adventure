@@ -33,7 +33,7 @@ class Users(db.Model):
     __tablename__ = "users"
     user_id = db.Column(db.Integer, primary_key=True)
     user_name = db.Column(db.String, nullable=False)
-    password = db.Colummn(db.String, nullable=False)
+    password = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False)
     date_of_birth = db.Column(db.String, nullable=False)
     twitter = db.Column(db.String, nullable=False)

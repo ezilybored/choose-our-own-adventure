@@ -39,7 +39,7 @@ class Users(db.Model):
     email = db.Column(db.String, nullable=False)
     date_of_birth = db.Column(db.String, nullable=False)
     twitter = db.Column(db.String, nullable=False)
-    # Links to the choices table. One to many relationship as user has many choices.
+    # Links to the choices table. One to many relationship as user has many choices and all aspects of each choice will need to be accessed
     choices = db.relationship('Choices', backref='user')
     isadmin = db.Column(db.Boolean, nullable=False)
 
@@ -47,6 +47,7 @@ class Posts(db.Model):
     __tablename__ = "posts"
     post_id = db.Column(db.Integer, primary_key=True)
     post = db.Column(db.String, nullable=False)
+    date = db.Column(db.DateTime, nullable=False)
     optionA = db.Column(db.String, nullable=False)
     optionB = db.Column(db.String, nullable=False)
     optionC = db.Column(db.String, nullable=False)
@@ -60,13 +61,25 @@ class Choices(db.Model):
     # Links to the users table user_id column. One to one relationship as each choice has only one user making it
     choice = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
     selected = db.Column(db.Boolean, nullable=False)
+    date = db.Column(db.DateTime, nullable=False)
     # Links to the posts table post_id column. One to one relationship as each choice has only one post it relates to
     post_id = db.Column(db.Integer, db.ForeignKey("posts.post_id"), nullable=False)
 
 """
 Example syntax for creating a new user
-jeff = Users(user_name='jeff', password='123456', email='jeff@jeff.com', date_of_birth="15/02/89", twitter="@jeff")
+jeff = Users(user_name='jeff', password='123456', email='jeff@jeff.com', date_of_birth="15/02/89", twitter="@jeff", isadmin=True)
+lily = Users(user_name='lily', password='123456', email='lily@lily.com', date_of_birth="15/02/89", twitter="@lily", isadmin=False)
 db.session.add(jeff)
+db.session.commit()
+
+Example syntax for creating a new post
+week1 = Posts(post="This is a test post", date="06/04/19", optionA="optionA", optionB="optionB", optionC="optionC", optionD="optionD", enabled=True, winchoice="")
+db.session.add(week1)
+db.session.commit()
+
+Example syntax for creating a new choice
+choice1 = Choices(choice="A", selected=True, optionB="optionB", optionC="optionC", optionD="optionD", enabled=True, winchoice="")
+db.session.add(week1)
 db.session.commit()
 
 """

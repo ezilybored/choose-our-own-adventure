@@ -7,6 +7,8 @@ from werkzeug.exceptions import default_exceptions
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime, date
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
 from helpers import login_required
 
 # Configure application
@@ -59,3 +61,11 @@ class Choices(db.Model):
     selected = db.Column(db.Boolean, nullable=False)
     # Links to the posts table post_id column. One to one relationship as each choice has only one post it relates to
     post_id = db.Column(db.Integer, db.ForeignKey("posts.post_id"), nullable=False)
+
+"""
+Example syntax for creating a new user
+jeff = Users(user_name='jeff', password='123456', email='jeff@jeff.com', date_of_birth="15/02/89", twitter="@jeff")
+db.session.add(jeff)
+db.session.commit()
+
+"""

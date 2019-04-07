@@ -68,25 +68,64 @@ class Choice(db.Model):
     # Links to the posts table post_id column.
     post_id = db.Column(db.Integer, db.ForeignKey("posts.post_id"))
 
-"""
-Example syntax for creating a new user
-jeff = User(user_name='jeff', password='123456', email='jeff@jeff.com', date_of_birth="15/02/89", twitter="@jeff", isadmin=True)
-lily = User(user_name='lily', password='123456', email='lily@lily.com', date_of_birth="15/02/89", twitter="@lily", isadmin=False)
-anakin = User(user_name='anakin', password='123456', email='anakin@anakin.com', date_of_birth="15/02/89", twitter="@anakin", isadmin=False)
-db.session.add(jeff)
-db.session.commit()
+""" User registration, Login and Logout process """
 
-Example syntax for creating a new post
-date needs to be in the form of a python datetime object. Need to import datetime
-week1 = Post(posttext="This is a test post", date=datetime.date(2019, 4, 6), optionA="optionA", optionB="optionB", optionC="optionC", optionD="optionD", enabled=True, winchoice="")
-db.session.add(week1)
-db.session.commit()
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    """Register user"""
 
-Example syntax for creating a new choice
-user is passed a reference to a User object via the backref user. The foreign key gets the user_id
-post is passed a reference to a Post object via the backref post. The foreign key gets the post_id
-choice1 = Choice(choice="A", user=lily , selected=True, date=datetime.date(2019, 4, 6), post=1)
-db.session.add(choice1)
-db.session.commit()
+    session.clear()
 
-"""
+    if request.method == "POST":
+        if not request.form.get("username"):
+            return render_template("error.html")
+
+        get_password = request.form.get("password")
+        get_newuser = request.form.get("username")
+        get_dob = request.form.get("dob")
+        get_email = request.form.get("email")
+        get_twitter = request.form.get("twitter")
+
+        insert = User(user_name=get_newuser, password=get_password, email=get_email, date_of_birth=get_dob, twitter=get_twitter, isadmin=False)
+        db.session.add(insert)
+        db.session.commit()
+
+        if not insert:
+            return render_template("error.html", error = "Failed user entry")
+        
+        session["user_id"] = insert
+
+        return redirect("/")
+    
+    else:
+        return render_template("register.html")
+
+
+@app.route("/regcheck", methods=["GET", "POST"])
+def regcheck():
+    """Allows the site to check whether a particular username has been taken yet"""
+
+    username = request.form.get("username")
+    user = User.query.filter_by(user_name=username).first()
+
+    if not user:
+        t = jsonify({"success": True})
+        return t
+    else:
+        f = jsonify({"success": False})
+        return f
+
+
+"""This section of code relates to the users pages"""
+
+
+@app.route("/", methods=["GET", "POST"])
+@app.route("/index", methods=["GET", "POST"])
+@login_required
+def index():
+    """The main home page of the website"""
+
+    #topost = db.execute("SELECT * FROM posts ORDER BY id DESC LIMIT 1")
+    #print("index page")
+
+    return render_template("index.html", text=topost)

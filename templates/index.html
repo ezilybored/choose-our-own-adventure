@@ -1,0 +1,104 @@
+<!-- Use the Jinja syntax to expand on the layout.html basic site structure -->
+
+{% extends "layout.html" %} {% block title %} Home {% endblock %} {% block main
+%}
+<form id="choices" method="post">
+  {% for t in text %}
+  <div class="container p-5 box">
+    {{ t.post }}
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm p-1">
+        <div class="card">
+          <div class="card-header">
+            <b>A</b>
+          </div>
+          <div class="card-body">
+            <p class="card-text">{{ t.optionA }}</p>
+            <button
+              class="btn btn-primary"
+              id="select"
+              name="selection"
+              data-vote="A"
+              value="A"
+              type="submit"
+            >
+              Select
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm p-1">
+        <div class="card">
+          <div class="card-header">
+            <b>B</b>
+          </div>
+          <div class="card-body">
+            <p class="card-text">{{ t.optionB }}</p>
+            <button
+              class="btn btn-danger"
+              id="select"
+              name="selection"
+              data-vote="B"
+              value="B"
+              type="submit"
+            >
+              Select
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm p-1">
+        <div class="card">
+          <div class="card-header">
+            <b>C</b>
+          </div>
+          <div class="card-body">
+            <p class="card-text">{{ t.optionC }}</p>
+            <button
+              class="btn btn-success"
+              id="select"
+              name="selection"
+              data-vote="C"
+              value="C"
+              type="submit"
+            >
+              Select
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm p-1">
+        <div class="card">
+          <div class="card-header">
+            <b>D</b>
+          </div>
+          <div class="card-body">
+            <p class="card-text">{{ t.optionD }}</p>
+            <button
+              class="btn btn-warning"
+              id="select"
+              name="selection"
+              data-vote="D"
+              value="D"
+              type="submit"
+            >
+              Select
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</form>
+<script src="/static/utilities.js"></script>
+<script
+  type="text/javascript"
+  src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"
+></script>
+<script src="/static/selectionmessagesockethybrid.js"></script>
+{% endblock %}

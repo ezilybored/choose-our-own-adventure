@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css')
+
+
+
+    }}">
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+
+    <title>{% block title %}{% endblock %}</title>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarCollapse"
+        aria-controls="navbarCollapse"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <a class="navbar-brand" href="#">Choose our adventure</a>
+        <!-- If the user is logged in then create this navbar -->
+        {% if session.user_id %}
+        <!-- If the user is admin then create this navbar -->
+        {% if session.admin %}
+        <ul class="navbar-nav mr-auto">
+          <!-- These are the navbar links available to a logged in user -->
+          <li class="nav-item"><a class="nav-link" href="/admin">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/users">Users</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="/newpost">New Post</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/editpost">Edit Post</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/archive">Previous Posts</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav ml-auto mt-2">
+          <li class="nav-item">
+            <a class="nav-link" href="">Admin Account</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">Log Out</a>
+          </li>
+        </ul>
+        <!-- If the user is not admin then create this navbar -->
+        {% else %}
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item"><a class="nav-link" href="/index">Home</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="/archive">The story so far</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/choices">Previous choices</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav ml-auto mt-2">
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">Log Out</a>
+          </li>
+        </ul>
+        {% endif %}
+        <!-- If the user is not logged in then create this navbar -->
+        {% else %}
+        <ul class="navbar-nav ml-auto mt-2">
+          <li class="nav-item">
+            <a class="nav-link" href="/register">Register</a>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="/login">Log In</a></li>
+        </ul>
+        {% endif %}
+      </div>
+    </nav>
+    <main class="container p-5">
+      {% block main %}{% endblock %}
+    </main>
+  </body>
+</html>

@@ -1,0 +1,45 @@
+ <!-- Use the Jinja syntax to expand on the layout.html basic site structure -->
+
+{% extends "layout.html" %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block main %}
+    <!-- This is where the main section of the page will go -->
+    <form id="register" action="/register" method="post">
+        <div id="main">
+            <div class="form-group">
+                <input id="username" autocomplete="off" autofocus class="form-control" name="username" placeholder="Username" type="text" required/>
+            </div>
+            <div class="form-group">
+                <input id ="password" autocomplete="off" input class="form-control" name="password" placeholder="Password" type="password" required/>
+            </div>
+            <div class="form-group">
+                <input id ="confirm" autocomplete="off" input class="form-control" name="confirmation" placeholder="Confirm password" type="password" required/>
+            </div>
+            <div class="form-group">
+                <input id ="dob" autocomplete="off" input class="form-control" name="dob" type="date" required/>
+            </div>
+            <div class="form-group">
+                <input id ="email"autocomplete="off" input class="form-control" name="email" placeholder="Email" type="text"/>
+            </div>
+            <div class="form-group">
+                <input id ="twitter" autocomplete="off" input class="form-control" name="twitter" placeholder="Twitter" type="text"/>
+            </div>
+            <div id="comment"> - Twitter and email are optional - </div>
+            <p>
+
+            </p>
+            <div id="feedback"> </div>
+            <p>
+
+            </p>
+            <button class="btn btn-primary" id="submit" name="submit" type="submit">Register</button>
+        </div>
+    </form>
+    <script src="/static/usernamecheck.js"></script>
+    <script src="/static/userregistered.js"></script>
+    <script src="/static/passwordcheck.js"></script>
+{% endblock %}

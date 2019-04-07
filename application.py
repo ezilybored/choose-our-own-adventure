@@ -31,7 +31,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Object class setup
-class Users(db.Model):
+class User(db.Model):
     __tablename__ = "users"
     user_id = db.Column(db.Integer, primary_key=True)
     user_name = db.Column(db.String, nullable=False)
@@ -39,14 +39,16 @@ class Users(db.Model):
     email = db.Column(db.String, nullable=False)
     date_of_birth = db.Column(db.String, nullable=False)
     twitter = db.Column(db.String, nullable=False)
-    # Links to the choices table. One to many relationship as user has many choices and all aspects of each choice will need to be accessed
-    choices = db.relationship('Choices', backref='user')
+    # Links to the Choices class. 
+    choices = db.relationship('Choice', backref='user')
     isadmin = db.Column(db.Boolean, nullable=False)
 
-class Posts(db.Model):
+class Post(db.Model):
     __tablename__ = "posts"
     post_id = db.Column(db.Integer, primary_key=True)
-    post = db.Column(db.String, nullable=False)
+    posttext = db.Column(db.String, nullable=False)
+    # Links to the Choices class.
+    choice = db.relationship('Choice', backref='post')
     date = db.Column(db.DateTime, nullable=False)
     optionA = db.Column(db.String, nullable=False)
     optionB = db.Column(db.String, nullable=False)
@@ -55,32 +57,35 @@ class Posts(db.Model):
     enabled = db.Column(db.Boolean, nullable=False)
     winchoice = db.Column(db.String, nullable=False)
 
-class Choices(db.Model):
+class Choice(db.Model):
     __tablename = "choices"
     choice_id = db.Column(db.Integer, primary_key=True)
-    # Links to the users table user_id column. One to one relationship as each choice has only one user making it
     choice = db.Column(db.String, nullable=False)
-    # choicemaker = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
+    # Links to the users table user_id column.
+    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
     selected = db.Column(db.Boolean, nullable=False)
     date = db.Column(db.DateTime, nullable=False)
-    # Links to the posts table post_id column. One to one relationship as each choice has only one post it relates to
+    # Links to the posts table post_id column.
     post_id = db.Column(db.Integer, db.ForeignKey("posts.post_id"), nullable=False)
 
 """
 Example syntax for creating a new user
 jeff = Users(user_name='jeff', password='123456', email='jeff@jeff.com', date_of_birth="15/02/89", twitter="@jeff", isadmin=True)
 lily = Users(user_name='lily', password='123456', email='lily@lily.com', date_of_birth="15/02/89", twitter="@lily", isadmin=False)
+anakin = Users(user_name='anakin', password='123456', email='anakin@anakin.com', date_of_birth="15/02/89", twitter="@anakin", isadmin=False)
 db.session.add(jeff)
 db.session.commit()
 
 Example syntax for creating a new post
 date needs to be in the form of a python datetime object. Need to import datetime
-week1 = Posts(post="This is a test post", date=datetime.date(2019, 4, 6), optionA="optionA", optionB="optionB", optionC="optionC", optionD="optionD", enabled=True, winchoice="")
+week1 = Posts(posttext="This is a test post", date=datetime.date(2019, 4, 6), optionA="optionA", optionB="optionB", optionC="optionC", optionD="optionD", enabled=True, winchoice="")
 db.session.add(week1)
 db.session.commit()
 
 Example syntax for creating a new choice
-choice1 = Choices(choice="A", user=lily , selected=True, date=datetime.date(2019, 4, 6), post_id=1)
+user is passed a reference to a User object via the backref user. The foreign key gets the user_id
+post is passed a reference to a Post object via the backref post. The foreign key gets the post_id
+choice1 = Choices(choice="A", user=lily , selected=True, date=datetime.date(2019, 4, 6), post=1)
 db.session.add(choice1)
 db.session.commit()
 

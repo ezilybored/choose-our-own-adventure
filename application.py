@@ -62,30 +62,30 @@ class Choice(db.Model):
     choice_id = db.Column(db.Integer, primary_key=True)
     choice = db.Column(db.String, nullable=False)
     # Links to the users table user_id column.
-    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.user_id"), nullable=False)
     selected = db.Column(db.Boolean, nullable=False)
     date = db.Column(db.DateTime, nullable=False)
     # Links to the posts table post_id column.
-    post_id = db.Column(db.Integer, db.ForeignKey("posts.post_id"), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey("post.post_id"), nullable=False)
 
 """
 Example syntax for creating a new user
-jeff = Users(user_name='jeff', password='123456', email='jeff@jeff.com', date_of_birth="15/02/89", twitter="@jeff", isadmin=True)
-lily = Users(user_name='lily', password='123456', email='lily@lily.com', date_of_birth="15/02/89", twitter="@lily", isadmin=False)
-anakin = Users(user_name='anakin', password='123456', email='anakin@anakin.com', date_of_birth="15/02/89", twitter="@anakin", isadmin=False)
+jeff = User(user_name='jeff', password='123456', email='jeff@jeff.com', date_of_birth="15/02/89", twitter="@jeff", isadmin=True)
+lily = User(user_name='lily', password='123456', email='lily@lily.com', date_of_birth="15/02/89", twitter="@lily", isadmin=False)
+anakin = User(user_name='anakin', password='123456', email='anakin@anakin.com', date_of_birth="15/02/89", twitter="@anakin", isadmin=False)
 db.session.add(jeff)
 db.session.commit()
 
 Example syntax for creating a new post
 date needs to be in the form of a python datetime object. Need to import datetime
-week1 = Posts(posttext="This is a test post", date=datetime.date(2019, 4, 6), optionA="optionA", optionB="optionB", optionC="optionC", optionD="optionD", enabled=True, winchoice="")
+week1 = Post(posttext="This is a test post", date=datetime.date(2019, 4, 6), optionA="optionA", optionB="optionB", optionC="optionC", optionD="optionD", enabled=True, winchoice="")
 db.session.add(week1)
 db.session.commit()
 
 Example syntax for creating a new choice
 user is passed a reference to a User object via the backref user. The foreign key gets the user_id
 post is passed a reference to a Post object via the backref post. The foreign key gets the post_id
-choice1 = Choices(choice="A", user=lily , selected=True, date=datetime.date(2019, 4, 6), post=1)
+choice1 = Choice(choice="A", user=lily , selected=True, date=datetime.date(2019, 4, 6), post=1)
 db.session.add(choice1)
 db.session.commit()
 

@@ -62,11 +62,11 @@ class Choice(db.Model):
     choice_id = db.Column(db.Integer, primary_key=True)
     choice = db.Column(db.String, nullable=False)
     # Links to the users table user_id column.
-    user_id = db.Column(db.Integer, db.ForeignKey("user.user_id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"))
     selected = db.Column(db.Boolean, nullable=False)
     date = db.Column(db.DateTime, nullable=False)
     # Links to the posts table post_id column.
-    post_id = db.Column(db.Integer, db.ForeignKey("post.post_id"), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey("posts.post_id"))
 
 """
 Example syntax for creating a new user

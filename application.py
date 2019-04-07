@@ -60,7 +60,7 @@ class Choices(db.Model):
     choice_id = db.Column(db.Integer, primary_key=True)
     # Links to the users table user_id column. One to one relationship as each choice has only one user making it
     choice = db.Column(db.String, nullable=False)
-    choicemaker = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
+    # choicemaker = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=False)
     selected = db.Column(db.Boolean, nullable=False)
     date = db.Column(db.DateTime, nullable=False)
     # Links to the posts table post_id column. One to one relationship as each choice has only one post it relates to
@@ -80,7 +80,7 @@ db.session.add(week1)
 db.session.commit()
 
 Example syntax for creating a new choice
-choice1 = Choices(choice="A", selected=True, date=datetime.date(2019, 4, 6))
+choice1 = Choices(choice="A", user=lily , selected=True, date=datetime.date(2019, 4, 6), post_id=1)
 db.session.add(choice1)
 db.session.commit()
 

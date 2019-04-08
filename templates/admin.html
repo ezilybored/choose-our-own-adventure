@@ -1,0 +1,111 @@
+{% extends "layout.html" %} {% block title %} Admin {% endblock %} {% block main
+%}
+
+<div class="container p-5 box">
+  {{ text.posttext }}
+</div>
+
+<div class="container box smallbox">
+  <div class="vote">
+    A Votes: <span id="A">{{ votes["A"] }} %</span>
+  </div>
+  <div class="vote">
+    B Votes: <span id="B">{{ votes["B"] }} %</span>
+  </div>
+  <div class="vote">
+    C Votes: <span id="C">{{ votes["C"] }} %</span>
+  </div>
+  <div class="vote">
+    D Votes: <span id="D">{{ votes["D"] }} %</span>
+  </div>
+</div>
+
+<div id="barchart"></div>
+
+<meta charset="utf-8" />
+<script src="https://d3js.org/d3.v5.js"></script>
+<script>
+  /*global d3 */
+  var votedata = `{{ jvotes }}`;
+  console.log(votedata);
+  var jvotedata = JSON.parse(votedata);
+  console.log(jvotedata);
+
+  var margin = { left: 90, top: 16, right: 30, bottom: 85 };
+  var barchart_width = 800 - margin.left - margin.right;
+  var barchart_height = 400 - margin.top;
+  var bar_padding = 5;
+
+  // These hex are the codes for the bootstrap colors
+  var color = d3.scaleOrdinal(["#0275d8", "#d9534f", "#5cb85c", "#f0ad4e"]);
+
+  var svg = d3
+    .select("#barchart")
+    .append("svg")
+    .attr("width", barchart_width)
+    .attr("height", barchart_height);
+
+  // Binds the data and creates the bars
+  svg
+    .selectAll("rect")
+    .data(jvotedata)
+    .enter()
+    .append("rect")
+    // Sets the distance between the bars. parametsr are d = data, i = index
+    .attr("x", function(d, i) {
+      return i * (barchart_width / jvotedata.length);
+    })
+    .attr("y", function(d) {
+      return barchart_height - d * 5;
+    })
+    .attr("width", barchart_width / jvotedata.length - bar_padding)
+    .attr("height", function(d) {
+      return d * 5;
+    })
+    .attr("fill", function(d, i) {
+      return color(i);
+    });
+
+  // Adding labels to the graph
+  svg
+    .selectAll("text")
+    .data(jvotedata)
+    .enter()
+    .append("text")
+    .text(function(d) {
+      return d;
+    })
+    // Centralises the text to the middle of the bar
+    .attr("x", function(d, i) {
+      return (
+        i * (barchart_width / jvotedata.length) +
+        (barchart_width / jvotedata.length - bar_padding) / 2
+      );
+    })
+    .attr("y", function(d) {
+      return barchart_height - d * 2 - 5;
+    })
+    .attr("font-size", 22)
+    .attr("fill", "purple")
+    .attr("text-anchor", "middle");
+</script>
+
+<div>
+  <form id="endvotes" action="/endvotes" method="post">
+    <button
+      class="btn btn-primary"
+      id="endvotebutton"
+      name="endvotebutton"
+      type="submit"
+    >
+      End voting for the week
+    </button>
+  </form>
+</div>
+
+<script
+  type="text/javascript"
+  src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"
+></script>
+<script src="/static/socketadmin.js"></script>
+{% endblock %}

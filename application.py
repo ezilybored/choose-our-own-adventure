@@ -10,6 +10,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from helpers import login_required
+import datetime
 
 # Configure application
 app = Flask(__name__)
@@ -80,7 +81,8 @@ def register():
         if not request.form.get("username"):
             return render_template("error.html")
 
-        get_password = request.form.get("password")
+        # This generates the hash of the inputted password
+        get_password=generate_password_hash(request.form.get("password")),
         get_newuser = request.form.get("username")
         get_dob = request.form.get("dob")
         get_email = request.form.get("email")
@@ -115,9 +117,45 @@ def regcheck():
         f = jsonify({"success": False})
         return f
 
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    """Log user in"""
+
+    session.clear()
+
+    if request.method == "POST":
+        username=request.form.get("username")
+        password=request.form.get("password")
+        user = User.query.filter_by(user_name=username).first()
+        print(user)
+
+        # Ensure username exists and password is correct using check_password_hash from werkzeug.security
+        if not check_password_hash(user.password, password):
+            return render_template("error.html", error = "username or password are incorrect")
+
+        session["user_id"] = user.user_id
+
+        session["admin"]= User.query.filter_by(user_name=username, isadmin=True).first()
+
+        if not session["admin"]:
+            return redirect("/")
+
+        else:
+            return redirect("/admin")
+    else:
+        return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    """Log user out"""
+
+    session.clear()
+
+    return redirect("/")
+
+
 
 """This section of code relates to the users pages"""
-
 
 @app.route("/", methods=["GET", "POST"])
 @app.route("/index", methods=["GET", "POST"])
@@ -125,7 +163,91 @@ def regcheck():
 def index():
     """The main home page of the website"""
 
-    #topost = db.execute("SELECT * FROM posts ORDER BY id DESC LIMIT 1")
-    #print("index page")
+    topost = Post.query.order_by(Post.post_id.desc()).first()
 
     return render_template("index.html", text=topost)
+
+
+
+"""This section of code relates to the admin pages"""
+
+@app.route("/admin", methods=["GET", "POST"])
+@login_required
+def admin():
+    """The admin home screen that shows a running tally of the totals for each post selection for the week"""
+
+    topost = Post.query.order_by(Post.post_id.desc()).first()
+    postid = topost.post_id
+    optionA = len(Choice.query.filter_by(post_id=postid, choice="A").all())
+    optionB = len(Choice.query.filter_by(post_id=postid, choice="B").all())
+    optionC = len(Choice.query.filter_by(post_id=postid, choice="C").all())
+    optionD = len(Choice.query.filter_by(post_id=postid, choice="D").all())
+
+    total = (optionA + optionB + optionC + optionD)
+    if total == 0:
+        percentA = 0;
+        percentB = 0;
+        percentC = 0;
+        percentD = 0;
+    else:
+        percentA = round(((optionA/total) * 100), 2)
+        percentB = round(((optionB/total) * 100), 2)
+        percentC = round(((optionC/total) * 100), 2)
+        percentD = round(((optionD/total) * 100), 2)
+
+    votes = {"A": percentA, "B": percentB, "C": percentC, "D": percentD}
+    jvotes = [percentA, percentB, percentC, percentD]
+
+    return render_template("admin.html", votes=votes, text=topost, jvotes=jvotes)
+
+@app.route("/newpost", methods=["GET", "POST"])
+@login_required
+def newpost():
+    """Where the admin can create new posts"""
+    anyposts = Post.query.all()
+    date = datetime.date.today()
+    newpost = request.form.get("newpost")
+    optionA = request.form.get("optionA")
+    optionB = request.form.get("optionB")
+    optionC = request.form.get("optionC")
+    optionD = request.form.get("optionD")
+
+    if not anyposts:
+        if request.method == "POST":
+
+                insert = User(posttext=newpost, date=date, user_name=get_newuser, optionA=optionA, optionB=optionB, optionC=optionC, optionD=optionD, enabled=True, winchoice="Not yet selected")
+                db.session.add(insert)
+                db.session.commit()
+
+                # For some reason this set the date separaetely to the rest. was there a reason for this?
+                #db.execute("UPDATE posts SET date_of_post = current_date WHERE post = :post",
+                            #post=newpost)
+
+                return render_template("newpost.html")
+        else:
+            return render_template("newpost.html")
+
+    else:
+        # Select most recent post and get the date of the post
+        topost = Post.query.order_by(Post.post_id.desc()).first()
+        lastdate = topost.date.date()
+        # Calculates the number of days since the last post
+        daydifference = abs((lastdate - date).days)
+        print(daydifference)
+
+        if request.method == "POST":
+            if daydifference >= 7:
+
+                insert = Post(posttext=newpost, date=date, optionA=optionA, optionB=optionB, optionC=optionC, optionD=optionD, enabled=True, winchoice="Not yet selected")
+                db.session.add(insert)
+                db.session.commit()
+
+                #db.execute("UPDATE posts SET date_of_post = current_date WHERE post = :post",
+                            #post=newpost)
+
+                return render_template("newpost.html")
+
+            else:
+                return render_template("error.html", error = ("You have already posted this week, try again in " + str(daydifference) + " days"))
+
+        return render_template("newpost.html")

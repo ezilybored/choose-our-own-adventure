@@ -1,0 +1,26 @@
+<!-- Use the Jinja syntax to expand on the layout.html basic site structure -->
+<!-- This page is done -->
+
+{% extends "layout.html" %}
+
+{% block title %}
+    Login
+{% endblock %}
+
+{% block main %}
+    <!-- This is where the main section of the page will go -->
+<head>
+    <script src="/static/submitchecks.js"></script>
+</head>
+    <form id="login" action="/login" method="post">
+        <div class="form-group">
+            <input autocomplete="off" autofocus class="form-control" name="username" onchange="manage(this);" placeholder="Username" type="text"/>
+        </div>
+        <div class="form-group">
+            <input autocomplete="off" class="form-control" name="password" onchange="manage(this);" placeholder="Password" type="password"/>
+        </div>
+        <button class="btn btn-secondary" id="submit" name="submit" type="submit" disabled>Log In</button>
+    </form>
+    <script src="/static/utilities.js"></script>
+    <script src="/static/loginmessage.js"></script>
+{% endblock %}

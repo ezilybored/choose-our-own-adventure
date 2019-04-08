@@ -82,6 +82,7 @@ week1 = Post(posttext="This is a test post", date=datetime.date(2019, 4, 6), opt
 week2 = Post(posttext="This is another test post", date=datetime.date(2019, 4, 13), optionA="optionA", optionB="optionB", optionC="optionC", optionD="optionD", enabled=True, winchoice="")
 db.session.add(week1)
 db.session.commit()
+datetime.date.today() sets todays date
 
 Example syntax for creating a new choice
 user is passed a reference to a User object via the backref user. The foreign key gets the user_id

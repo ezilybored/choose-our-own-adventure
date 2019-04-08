@@ -1,0 +1,49 @@
+ <!-- Use the Jinja syntax to expand on the layout.html basic site structure -->
+
+{% extends "layout.html" %}
+
+{% block title %}
+    New Post
+{% endblock %}
+
+{% block main %}
+    <!-- This is where the main section of the page will go -->
+    <form method="post">
+        <div class="input-group-prepend">
+            <span class="input-group-text">New Post</span>
+        </div>
+        <div class="input-group">
+            <textarea class="form-control" id="newpost" name="newpost" rows="20"></textarea>
+        </div>
+        <p></p>
+        <div class="input-group-prepend">
+            <span class="input-group-text">OptionA</span>
+        </div>
+        <div class="input-group">
+            <textarea class="form-control" id="optionA" name="optionA" rows="2"></textarea>
+        </div>
+        <p></p>
+        <div class="input-group-prepend">
+            <span class="input-group-text">OptionB</span>
+        </div>
+        <div class="input-group">
+            <textarea class="form-control" id="optionB" name="optionB" ows="2"></textarea>
+        </div>
+        <p></p>
+        <div class="input-group-prepend">
+            <span class="input-group-text">OptionC</span>
+        </div>
+        <div class="input-group">
+            <textarea class="form-control" id="optionC" name="optionC" rows="2"></textarea>
+        </div>
+        <p></p>
+        <div class="input-group-prepend">
+            <span class="input-group-text">OptionD</span>
+        </div>
+        <div class="input-group">
+            <textarea class="form-control" id="optionD" name="optionD" rows="2"></textarea>
+        </div>
+        <p></p>
+        <button type="submit" class="btn btn-secondary">Submit Post</button>
+    </form>
+{% endblock %}

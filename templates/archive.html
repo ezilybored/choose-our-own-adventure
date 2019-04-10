@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    archive
+{% endblock %}
+
+{% block main %}
+
+{% for post in posts %}
+<div class="container p-3 box">
+    <div class="container p-1">
+        Week {{ post.post_id }}.
+    </div class="container p-1">
+    {{ post.posttext }}
+    <div class="container p-1">
+        Winning vote: {{ post.winchoice }}
+    </div>
+</div>
+<div>
+{% if prev_url %}
+<a href="{{ prev_url }}" class="btn btn-secondary" role="button"
+    >Previous post</a
+>
+{% endif %} {% if next_url %}
+<a href="{{ next_url }}" class="btn btn-secondary" role="button"
+    >Next post</a
+>
+{% endif %}
+</div>
+{% endfor %}
+
+{% endblock %}

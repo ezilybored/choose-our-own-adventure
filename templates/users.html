@@ -1,9 +1,9 @@
 {% extends "layout.html" %} {% block title %} Users {% endblock %} {% block main
 %}
 
-<div class="container-fluid box">
-  <table class="table table-hover">
-    <thead>
+<div>
+  <table class="table table-hover table-responsive-sm table-responsive-lg">
+    <thead class="thead-dark">
       <tr>
         <th scope="col">id</th>
         <th scope="col">Username</th>
@@ -14,7 +14,7 @@
         <th scope="col"></th>
       </tr>
     </thead>
-    <tbody>
+    <tbody class="table-light">
       {% for user in users %}
       <tr>
         <form action="/changeStatus" method="post">
@@ -34,6 +34,10 @@
       {% endfor %}
     </tbody>
   </table>
+
+  <div class="scrollinfo">
+    Scroll sideways for full table
+  </div>
 
   {% if prev_url %}
   <a href="{{ prev_url }}" class="btn btn-secondary" role="button"

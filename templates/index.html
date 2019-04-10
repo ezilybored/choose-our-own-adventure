@@ -16,7 +16,7 @@
           <div class="card-body">
             <p class="card-text">{{ text.optionA }}</p>
             <button
-              class="btn btn-primary"
+              class="btn btn-primary selecta"
               id="select"
               name="selection"
               data-vote="A"
@@ -36,7 +36,7 @@
           <div class="card-body">
             <p class="card-text">{{ text.optionB }}</p>
             <button
-              class="btn btn-danger"
+              class="btn btn-danger selecta"
               id="select"
               name="selection"
               data-vote="B"
@@ -58,7 +58,7 @@
           <div class="card-body">
             <p class="card-text">{{ text.optionC }}</p>
             <button
-              class="btn btn-success"
+              class="btn btn-success selecta"
               id="select"
               name="selection"
               data-vote="C"
@@ -78,7 +78,7 @@
           <div class="card-body">
             <p class="card-text">{{ text.optionD }}</p>
             <button
-              class="btn btn-warning"
+              class="btn btn-warning selecta"
               id="select"
               name="selection"
               data-vote="D"
@@ -98,5 +98,5 @@
   type="text/javascript"
   src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"
 ></script>
-<script src="/static/selectionmessagesockethybrid.js"></script>
+<script src="/static/socketsendchoice.js"></script>
 {% endblock %}

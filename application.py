@@ -169,6 +169,75 @@ def index():
 
     return render_template("index.html", text=topost)
 
+@app.route("/archive", methods=["GET", "POST"])
+@login_required
+def archive():
+    """A history of all previous posts, essentially the story from week 1"""
+    page = request.args.get('page', 1, type=int)
+    paginate = 1
+    postlist = Post.query.paginate(page, paginate, False)
+    next_url = url_for('archive', page=postlist.next_num) \
+        if postlist.has_next else None
+    prev_url = url_for('archive', page=postlist.prev_num) \
+        if postlist.has_prev else None
+
+    return render_template("archive.html", posts=postlist.items, next_url=next_url, prev_url=prev_url)
+
+@socketio.on("submit vote")
+def vote(data):
+    selection = data["selection"]
+    postid = data["postid"]
+    date = datetime.date.today()
+
+    if not session["admin"]:
+
+        insert = Choice(choice=selection, user_id=session["user_id"], selected=True, date=date, post_id=postid)
+        db.session.add(insert)
+        db.session.commit()
+
+        optionA = len(Choice.query.filter_by(post_id=postid, choice="A").all())
+        optionB = len(Choice.query.filter_by(post_id=postid, choice="B").all())
+        optionC = len(Choice.query.filter_by(post_id=postid, choice="C").all())
+        optionD = len(Choice.query.filter_by(post_id=postid, choice="D").all())
+        total = (optionA + optionB + optionC + optionD)
+
+        if total == 0:
+            percentA = 0;
+            percentB = 0;
+            percentC = 0;
+            percentD = 0;
+        else:
+            percentA = round(((optionA/total) * 100), 2)
+            percentB = round(((optionB/total) * 100), 2)
+            percentC = round(((optionC/total) * 100), 2)
+            percentD = round(((optionD/total) * 100), 2)
+        
+        votes = {"A": percentA, "B": percentB, "C": percentC, "D": percentD}
+        jvotes = [percentA, percentB, percentC, percentD]
+
+        emit("vote totals", votes, broadcast=True)
+        emit("vote json", jvotes, broadcast=True)
+
+@app.route("/votecheck", methods=["POST"])
+@login_required
+def votecheck():
+    """Allows the site to check if the user has posted yet this week"""
+    recentPost = Post.query.order_by(Post.post_id.desc()).first()
+    postid = recentPost.post_id
+    currentUser = session["user_id"]
+    selected = Choice.query.filter_by(post_id=postid, user_id=currentUser, selected=True).first()
+    enabled = Post.query.filter_by(post_id=postid, enabled=True).first()
+
+    if not selected and enabled:
+        t = jsonify({"success": True, "postid": postid})
+        return t
+    if not enabled:
+        d = jsonify({"success": "Not"})
+        return d
+    else:
+        f = jsonify({"success": False})
+        return f
+
 
 
 """This section of code relates to the admin pages"""
@@ -263,7 +332,7 @@ def getoptions():
         print(f)
         return f
     else:
-        t = jsonify({"success": True, "dates": dates,})
+        t = jsonify({"success": True, "dates": dates})
         print(t)
         return t
 
@@ -304,10 +373,8 @@ def updateposts():
 @login_required
 def users():
     """Loads the users page with page 1 table"""
-    #page = request.form.get("page", 1, type=int)
     page = request.args.get('page', 1, type=int)
-    print(page)
-    paginate = 3
+    paginate = 5
     userlist = User.query.paginate(page, paginate, False)
     next_url = url_for('users', page=userlist.next_num) \
         if userlist.has_next else None

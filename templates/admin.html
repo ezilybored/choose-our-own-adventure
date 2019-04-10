@@ -5,7 +5,7 @@
   {{ text.posttext }}
 </div>
 
-<div class="container box smallbox">
+<div class="container smallbox">
   <div class="vote">
     A Votes: <span id="A">{{ votes["A"] }} %</span>
   </div>
@@ -27,12 +27,11 @@
 <script>
   /*global d3 */
   var votedata = `{{ jvotes }}`;
-  console.log(votedata);
   var jvotedata = JSON.parse(votedata);
-  console.log(jvotedata);
 
   var margin = { left: 90, top: 16, right: 30, bottom: 85 };
-  var barchart_width = 800 - margin.left - margin.right;
+  //var barchart_width = 800 - margin.left - margin.right;
+  var barchart_width = 200;
   var barchart_height = 400 - margin.top;
   var bar_padding = 5;
 
@@ -85,7 +84,7 @@
     .attr("y", function(d) {
       return barchart_height - d * 2 - 5;
     })
-    .attr("font-size", 22)
+    .attr("font-size", 18)
     .attr("fill", "purple")
     .attr("text-anchor", "middle");
 </script>

@@ -1,0 +1,132 @@
+html {
+  box-sizing: border-box;
+}
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+html,
+body {
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  font-size: 14pt;
+  line-height: 1rem;
+  font-family: "Roboto", sans-serif;
+}
+
+nav .navbar-brand {
+  /* size for brand */
+  font-size: x-large;
+}
+
+main .form-control {
+  /* center form controls */
+  display: inline-block;
+
+  /* override Bootstrap's 100% width for form controls */
+  width: auto;
+}
+
+main {
+  /* scroll horizontally as needed */
+  /*overflow-x: auto; */
+
+  /* center contents */
+  text-align: center;
+}
+
+body {
+  background: url(images/topography.png);
+}
+
+.box {
+  background-color: white;
+  border-color: grey;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 3px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.smallbox {
+  background-color: white;
+  border-color: grey;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 3px;
+  padding: 5px;
+  max-width: 100%;
+  display: inline-block;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+main img {
+  /* constrain images on small screens */
+  max-width: 100%;
+}
+
+#feedback {
+  color: red;
+}
+
+#postedit {
+  margin: 30px;
+}
+
+#dateselect {
+  margin-bottom: 10px;
+}
+
+#postid {
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+#barchart {
+  width: 100%;
+  height: 60%;
+  background-color: white;
+  border-color: grey;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 3px;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+
+.scrollinfo {
+  display: block;
+  margin-bottom: 10px;
+}
+
+@media only screen and (min-width: 768px) {
+  #barchart {
+    width: 50%;
+  }
+  .smallbox {
+    width: 50%;
+  }
+  .box {
+    width: 50%;
+  }
+  .scrollinfo {
+    display: none;
+  }
+}
+
+.vote {
+  text-align: center;
+  padding-left: 30px;
+}
+
+.datebox {
+  padding: 15px;
+  max-width: 25%;
+  display: inline-block;
+}

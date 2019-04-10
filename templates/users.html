@@ -1,0 +1,48 @@
+{% extends "layout.html" %} {% block title %} Users {% endblock %} {% block main
+%}
+
+<div class="container-fluid box">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">id</th>
+        <th scope="col">Username</th>
+        <th scope="col">Email</th>
+        <th scope="col">Twitter</th>
+        <th scope="col">Date of birth</th>
+        <th scope="col">Admin?</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+        <form action="/changeStatus" method="post">
+          <td>{{ user.user_id }}</td>
+          <td>{{ user.user_name }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.twitter }}</td>
+          <td>{{ user.date_of_birth }}</td>
+          <td>{{ user.isadmin }}</td>
+          <td>
+            <button type="button" name="Demote" class="btn btn-danger">
+              Delete
+            </button>
+          </td>
+        </form>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if prev_url %}
+  <a href="{{ prev_url }}" class="btn btn-secondary" role="button"
+    >Previous users</a
+  >
+  {% endif %} {% if next_url %}
+  <a href="{{ next_url }}" class="btn btn-secondary" role="button"
+    >Next users</a
+  >
+  {% endif %}
+</div>
+{% endblock %}

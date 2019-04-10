@@ -1,0 +1,58 @@
+ <!-- Use the Jinja syntax to expand on the layout.html basic site structure -->
+
+{% extends "layout.html" %}
+
+{% block title %}
+    Users
+{% endblock %}
+
+{% block main %}
+    <!-- This is where the main section of the page will go -->
+    <!-- This page has a table of all of the users registered to the site -->
+    <!-- Each row will need a button to either remove or promote to admin -->
+    <!-- Add a search bar so that a particular user can be searched for -->
+
+<div class="container-fluid box">
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">id</th>
+            <th scope="col">Username</th>
+            <th scope="col">Email</th>
+            <th scope="col">Twitter</th>
+            <th scope="col">Date of registration</th>
+            <th scope="col">Admin?</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+        <tbody>
+        {% for user in users %}
+        <tr>
+            <!-- Shows all users that were submitted to the page. Allows the sending of a message to demote or promote a user -->
+            <!-- Cannot delete a user as this will remove their user id which is essential for searching to work -->
+            <!-- When delete is chosen just update the entry with deleted in every field but keep user id -->
+            <form action="/changeStatus"method="post">
+                <td> {{ user.userid }}</td>
+                <td> {{ user.username }}</td>
+                <td> {{ user.email }}</td>
+                <td> {{ user.twitter }}</td>
+                <td> {{ user.date_of_birth }}</td>
+                <td> {{ user.admin }}</td>
+                <td><button type="button" name="Demote" class="btn btn-secondary">Promote</button></td>
+                <td><button type="button" name="Promote" class="btn btn-secondary">Demote</button></td>
+                <td><button type="button" name="Demote" class="btn btn-secondary">Delete</button></td>
+            </form>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<!-- Sends the last user id back to the server to get the next or previous 10 users-->
+<form action="/changeUser"method="post">
+    <button class="btn btn-secondary"  id ="previous" name="Previous" value="{{ finalid }}" type="submit">Previous</button>
+    <button class="btn btn-secondary"  id="next" name="Next" value="{{ finalid }}" type="submit">Next</button>
+</form>
+</div>
+
+{% endblock %}

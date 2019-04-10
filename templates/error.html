@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Error
+{% endblock %}
+
+{% block main %}
+    <p>
+        <!-- The curly brace contains a python variable that is passed in to the html script. This is done through a route in application.py -->
+        Hi I am Errol the Error message. Error: {{error}}
+    </p>
+{% endblock %}

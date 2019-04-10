@@ -11,16 +11,18 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from helpers import login_required
 import datetime
+import json
 
 # Configure application
 app = Flask(__name__)
 
 # Configures Socket I/O
+# Move the secret key to an environment variable on heroku
 app.config['SECRET_KEY'] = 'art24tushet625rpl43522dc'
 socketio = SocketIO(app, manage_session=False) # manage_session=False hands the session handling to flask
 
 # Database setup
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://tygtumblgerbrs:05f0c922f34bd53dbe8b38c0c231e264ed3a2c1e8d48bcf01e3a85d78ad1febc@ec2-54-247-70-127.eu-west-1.compute.amazonaws.com:5432/d8vfveb2569p2u'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://loprfyygondmhd:ce3ed7d99a5014adc7fd020075bee4f20c490d85686f238ff6fc78ce2f4ca8f5@ec2-46-137-188-105.eu-west-1.compute.amazonaws.com:5432/d8t3git44gis72'
 db = SQLAlchemy(app)
 
 if not os.getenv("DATABASE_URL"):
@@ -182,8 +184,8 @@ def admin():
     optionB = len(Choice.query.filter_by(post_id=postid, choice="B").all())
     optionC = len(Choice.query.filter_by(post_id=postid, choice="C").all())
     optionD = len(Choice.query.filter_by(post_id=postid, choice="D").all())
-
     total = (optionA + optionB + optionC + optionD)
+
     if total == 0:
         percentA = 0;
         percentB = 0;
@@ -219,21 +221,14 @@ def newpost():
                 db.session.add(insert)
                 db.session.commit()
 
-                # For some reason this set the date separaetely to the rest. was there a reason for this?
-                #db.execute("UPDATE posts SET date_of_post = current_date WHERE post = :post",
-                            #post=newpost)
-
                 return render_template("newpost.html")
         else:
             return render_template("newpost.html")
 
     else:
-        # Select most recent post and get the date of the post
         topost = Post.query.order_by(Post.post_id.desc()).first()
         lastdate = topost.date.date()
-        # Calculates the number of days since the last post
         daydifference = abs((lastdate - date).days)
-        print(daydifference)
 
         if request.method == "POST":
             if daydifference >= 7:
@@ -242,12 +237,82 @@ def newpost():
                 db.session.add(insert)
                 db.session.commit()
 
-                #db.execute("UPDATE posts SET date_of_post = current_date WHERE post = :post",
-                            #post=newpost)
-
                 return render_template("newpost.html")
 
             else:
                 return render_template("error.html", error = ("You have already posted this week, try again in " + str(daydifference) + " days"))
 
         return render_template("newpost.html")
+
+@app.route("/editpost", methods=["GET", "POST"])
+@login_required
+def editpost():
+    """Allows the admin to edit any posts that may have errors"""
+
+    return render_template("editpost.html")
+
+@app.route("/getoptions", methods=["GET", "POST"])
+@login_required
+def getoptions():
+    """Retrieves the dates that posts were made"""
+
+    dates = Post.query.with_entities(Post.date).all()
+
+    if not dates:
+        f = jsonify({"success": False})
+        print(f)
+        return f
+    else:
+        t = jsonify({"success": True, "dates": dates,})
+        print(t)
+        return t
+
+
+@app.route("/retrieveposts", methods=["POST"])
+@login_required
+def retrieveposts():
+    """Retrieves a previous post so that the admin can make any edits required"""
+    date = request.form.get("date")
+    post = Post.query.filter_by(date=date).first()
+
+    if not post:
+        f = jsonify({"success": False})
+        return f
+    else:
+        topost = post.posttext
+        postid = post.post_id
+        t = jsonify({"success": True, "post": topost, "postid": postid})
+        return t
+
+@app.route("/updateposts", methods=["POST"])
+@login_required
+def updateposts():
+    """Updates the saved posts with any changes made by the admin"""
+
+    if request.method == "POST":
+        updatepost = request.form.get("postedit")
+        postid = request.form.get("postid")
+
+        toupdate = Post.query.filter_by(post_id=postid).first()
+        toupdate.posttext = updatepost
+        db.session.add(toupdate)
+        db.session.commit()
+
+    return render_template("editpost.html")
+
+@app.route("/users", methods=["GET", "POST"])
+@login_required
+def users():
+    """Loads the users page with page 1 table"""
+    #page = request.form.get("page", 1, type=int)
+    page = request.args.get('page', 1, type=int)
+    print(page)
+    paginate = 3
+    userlist = User.query.paginate(page, paginate, False)
+    next_url = url_for('users', page=userlist.next_num) \
+        if userlist.has_next else None
+    prev_url = url_for('users', page=userlist.prev_num) \
+        if userlist.has_prev else None
+
+    return render_template("users.html", users=userlist.items, next_url=next_url, prev_url=prev_url)
+

@@ -1,0 +1,40 @@
+{% extends "layout.html" %} {% block title %} Edit Post {% endblock %} {% block
+main %}
+<!-- Maybe change this to be a drop down option list -->
+
+<div id="dateselect">
+  Select a post to edit:
+</div>
+<form id="enterdate" method="post">
+  <div class="form-group">
+    <select class="form-control mr-2" id="datelist" name="date">
+      <!-- Options are inserted here by socketpost.js-->
+      <option>Please select a post</option>
+    </select>
+  </div>
+</form>
+<form id="editpost" action="/updateposts" method="post">
+  <div class="input-group">
+    <textarea class="form-control" id="postedit" name="postedit" rows="20">
+Edit post text.</textarea
+    >
+  </div>
+  <div class="form-group">
+    <textarea readonly class="form-control" id="postid" name="postid" rows="1">
+Post ID</textarea
+    >
+  </div>
+  <div>
+    <button
+      class="btn btn-secondary"
+      id="submitedit"
+      name="submitedit"
+      type="submit"
+    >
+      Submit edit
+    </button>
+  </div>
+</form>
+<script src="/static/getoptions.js"></script>
+<script src="/static/retrieveposts.js"></script>
+{% endblock %}

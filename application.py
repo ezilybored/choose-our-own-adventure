@@ -17,14 +17,13 @@ import json
 app = Flask(__name__)
 
 # Configures Socket I/O
-# Move the secret key to an environment variable on heroku
-# app.config['SECRET_KEY'] = 'art24tushet625rpl43522dc'
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', None)
+# envirnment variables need to be exported in the terminal for local use E.g. export SECRET_KEY='*****whatever the secret key is******'
 
 socketio = SocketIO(app, manage_session=False) # manage_session=False hands the session handling to flask
 
 # Database setup
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://loprfyygondmhd:ce3ed7d99a5014adc7fd020075bee4f20c490d85686f238ff6fc78ce2f4ca8f5@ec2-46-137-188-105.eu-west-1.compute.amazonaws.com:5432/d8t3git44gis72'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', None)
 db = SQLAlchemy(app)
 
 if not os.getenv("DATABASE_URL"):

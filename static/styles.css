@@ -83,6 +83,10 @@ main img {
   margin-bottom: 10px;
 }
 
+input:invalid {
+  border-color: red;
+}
+
 #postid {
   margin-bottom: 10px;
   text-align: center;

@@ -1,0 +1,23 @@
+{% extends "layout.html" %} {% block title %} choices {% endblock %} {% block
+main %}
+<div>
+  <table class="table table-hover table-responsive-sm table-responsive-lg">
+    <thead class="thead-dark">
+      <tr>
+        <th>Date</th>
+        <th>Choice</th>
+        <th>Choice text</th>
+      </tr>
+    </thead>
+    <tbody class="table-light">
+      {% for choice in choices %}
+      <tr>
+        <td>{{ choice.Choice.date }}</td>
+        <td>{{ choice.Choice.choice }}</td>
+        <td>{{ choice.Post.posttext }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

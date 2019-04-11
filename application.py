@@ -97,9 +97,15 @@ def register():
         if not insert:
             return render_template("error.html", error = "Failed user entry")
         
-        session["user_id"] = insert
+        user = User.query.filter_by(user_name=get_newuser).first()
+        session["user_id"] = user.user_id
 
-        return redirect("/")
+        session["admin"]= User.query.filter_by(user_name=get_newuser, isadmin=True).first()
+
+        if not session["admin"]:
+            return redirect("/")
+        else:
+            return redirect("/admin")
     
     else:
         return render_template("register.html")
@@ -129,7 +135,6 @@ def login():
         username=request.form.get("username")
         password=request.form.get("password")
         user = User.query.filter_by(user_name=username).first()
-        print(user)
 
         # Ensure username exists and password is correct using check_password_hash from werkzeug.security
         if not check_password_hash(user.password, password):
@@ -189,34 +194,32 @@ def vote(data):
     postid = data["postid"]
     date = datetime.date.today()
 
-    if not session["admin"]:
+    insert = Choice(choice=selection, user_id=session["user_id"], selected=True, date=date, post_id=postid)
+    db.session.add(insert)
+    db.session.commit()
 
-        insert = Choice(choice=selection, user_id=session["user_id"], selected=True, date=date, post_id=postid)
-        db.session.add(insert)
-        db.session.commit()
+    optionA = len(Choice.query.filter_by(post_id=postid, choice="A").all())
+    optionB = len(Choice.query.filter_by(post_id=postid, choice="B").all())
+    optionC = len(Choice.query.filter_by(post_id=postid, choice="C").all())
+    optionD = len(Choice.query.filter_by(post_id=postid, choice="D").all())
+    total = (optionA + optionB + optionC + optionD)
 
-        optionA = len(Choice.query.filter_by(post_id=postid, choice="A").all())
-        optionB = len(Choice.query.filter_by(post_id=postid, choice="B").all())
-        optionC = len(Choice.query.filter_by(post_id=postid, choice="C").all())
-        optionD = len(Choice.query.filter_by(post_id=postid, choice="D").all())
-        total = (optionA + optionB + optionC + optionD)
+    if total == 0:
+        percentA = 0;
+        percentB = 0;
+        percentC = 0;
+        percentD = 0;
+    else:
+        percentA = round(((optionA/total) * 100), 2)
+        percentB = round(((optionB/total) * 100), 2)
+        percentC = round(((optionC/total) * 100), 2)
+        percentD = round(((optionD/total) * 100), 2)
+    
+    votes = {"A": percentA, "B": percentB, "C": percentC, "D": percentD}
+    jvotes = [percentA, percentB, percentC, percentD]
 
-        if total == 0:
-            percentA = 0;
-            percentB = 0;
-            percentC = 0;
-            percentD = 0;
-        else:
-            percentA = round(((optionA/total) * 100), 2)
-            percentB = round(((optionB/total) * 100), 2)
-            percentC = round(((optionC/total) * 100), 2)
-            percentD = round(((optionD/total) * 100), 2)
-        
-        votes = {"A": percentA, "B": percentB, "C": percentC, "D": percentD}
-        jvotes = [percentA, percentB, percentC, percentD]
-
-        emit("vote totals", votes, broadcast=True)
-        emit("vote json", jvotes, broadcast=True)
+    emit("vote totals", votes, broadcast=True)
+    emit("vote json", jvotes, broadcast=True)
 
 @app.route("/votecheck", methods=["POST"])
 @login_required
@@ -237,6 +240,27 @@ def votecheck():
     else:
         f = jsonify({"success": False})
         return f
+
+@app.route("/choices")
+@login_required
+def choices():
+    """Shows the choices made by the user"""
+    # Need to join post and choices tables then paginate the results
+    currentUser = session["user_id"]
+    print("user: ", currentUser)
+    page = request.args.get('page', 1, type=int)
+    print("page: ", page)
+    paginate = 1
+    print("paginate: ", paginate)
+    choicesmade = db.session.query(Choice, Post).outerjoin(Choice, Post.post_id == Choice.post_id).filter_by(user_id=currentUser).paginate(page, paginate, False)
+    print("choices: ", choicesmade)
+    print(choicesmade.items)
+    next_url = url_for('choices', page=choicesmade.next_num) \
+        if choicesmade.has_next else None
+    prev_url = url_for('choices', page=choicesmade.prev_num) \
+        if choicesmade.has_prev else None
+
+    return render_template("choices.html", choices=choicesmade.items, next_url=next_url, prev_url=prev_url)
 
 
 

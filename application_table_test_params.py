@@ -129,9 +129,3 @@ The same but in descending order
 join = db.session.query(User, Choice).outerjoin(Choice, User.user_id == Choice.user_id).filter_by(user_id=lily.user_id).order_by(Choice.choice_id.desc()).all()
 
 """
-
-"""This section of code relates to the user registration and login/out processes"""
-
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    """Register user"""

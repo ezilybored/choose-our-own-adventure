@@ -25,7 +25,12 @@
           <td>{{ user.date_of_birth }}</td>
           <td>{{ user.isadmin }}</td>
           <td>
-            <button type="button" name="Demote" class="btn btn-danger">
+            <button
+              type="button"
+              name="Delete"
+              data-userid="{{ user.user_id }}"
+              class="btn btn-danger delete"
+            >
               Delete
             </button>
           </td>
@@ -49,4 +54,5 @@
   >
   {% endif %}
 </div>
+<script src="/static/deleteuser.js"></script>
 {% endblock %}

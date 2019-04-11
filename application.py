@@ -18,7 +18,9 @@ app = Flask(__name__)
 
 # Configures Socket I/O
 # Move the secret key to an environment variable on heroku
-app.config['SECRET_KEY'] = 'art24tushet625rpl43522dc'
+# app.config['SECRET_KEY'] = 'art24tushet625rpl43522dc'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', None)
+
 socketio = SocketIO(app, manage_session=False) # manage_session=False hands the session handling to flask
 
 # Database setup
@@ -221,7 +223,7 @@ def vote(data):
     emit("vote totals", votes, broadcast=True)
     emit("vote json", jvotes, broadcast=True)
 
-@app.route("/votecheck", methods=["POST"])
+@app.route("/votecheck", methods=["GET", "POST"])
 @login_required
 def votecheck():
     """Allows the site to check if the user has posted yet this week"""
@@ -324,7 +326,7 @@ def newpost():
         daydifference = abs((lastdate - date).days)
 
         if request.method == "POST":
-            if daydifference >= 7:
+            if daydifference >= 5:
 
                 insert = Post(posttext=newpost, date=date, optionA=optionA, optionB=optionB, optionC=optionC, optionD=optionD, enabled=True, winchoice="Not yet selected")
                 db.session.add(insert)
@@ -333,7 +335,7 @@ def newpost():
                 return render_template("newpost.html")
 
             else:
-                return render_template("error.html", error = ("You have already posted this week, try again in " + str(daydifference) + " days"))
+                return render_template("error.html", error = ("You have already posted this week, try again in " + (str(daydifference - 2)) + " days"))
 
         return render_template("newpost.html")
 
@@ -361,7 +363,7 @@ def getoptions():
         return t
 
 
-@app.route("/retrieveposts", methods=["POST"])
+@app.route("/retrieveposts", methods=["GET", "POST"])
 @login_required
 def retrieveposts():
     """Retrieves a previous post so that the admin can make any edits required"""
@@ -377,7 +379,7 @@ def retrieveposts():
         t = jsonify({"success": True, "post": topost, "postid": postid})
         return t
 
-@app.route("/updateposts", methods=["POST"])
+@app.route("/updateposts", methods=["GET", "POST"])
 @login_required
 def updateposts():
     """Updates the saved posts with any changes made by the admin"""
@@ -407,3 +409,72 @@ def users():
 
     return render_template("users.html", users=userlist.items, next_url=next_url, prev_url=prev_url)
 
+
+@app.route("/deleteuser", methods=["GET", "POST"])
+@login_required
+def deleteuser():
+    """Deletes users from the databse"""
+    user = int(request.form.get("id"))
+    print(user)
+    print(session["user_id"])
+    if user != session["user_id"]:
+        print("deleting")
+        user = User.query.filter_by(user_id=user).first()
+        db.session.delete(user)
+        db.session.commit()
+
+        t = jsonify({"success": True})
+        return t
+    else:
+        f = jsonify({"success": False})
+        return f
+
+@app.route("/endvotes", methods=["GET", "POST"])
+@login_required
+def endvotes():
+    """Ends the voting for the week"""
+
+    topost = Post.query.order_by(Post.post_id.desc()).first()
+    postid = topost.post_id
+    optionA = len(Choice.query.filter_by(post_id=postid, choice="A").all())
+    optionB = len(Choice.query.filter_by(post_id=postid, choice="B").all())
+    optionC = len(Choice.query.filter_by(post_id=postid, choice="C").all())
+    optionD = len(Choice.query.filter_by(post_id=postid, choice="D").all())
+    totals = {"A": optionA, "B": optionB, "C": optionC, "D": optionD}
+    print(totals)
+    result = max(totals.keys(), key=(lambda k: totals[k]))
+    print(result)
+    # Set the enabled cand winchoice charcteristic of the current week
+    topost.enabled = False
+    topost.winchoice = result
+    db.session.add(topost)
+    db.session.commit()
+
+    return redirect("/admin")
+
+"""
+    if request.method == "POST":
+        print("endvote pressed")
+        topost = db.execute("SELECT * FROM posts ORDER BY id DESC LIMIT 1")
+        postid = topost[0]['id']
+        db.execute("UPDATE posts SET enabled = 'False' WHERE id = :postid", postid = postid)
+
+    voteA = db.execute("SELECT * FROM choices WHERE choice=:choice AND postid=:postid", choice = "A", postid = topost[0]["id"])
+    voteB = db.execute("SELECT * FROM choices WHERE choice=:choice AND postid=:postid", choice = "B", postid = topost[0]["id"])
+    voteC = db.execute("SELECT * FROM choices WHERE choice=:choice AND postid=:postid", choice = "C", postid = topost[0]["id"])
+    voteD = db.execute("SELECT * FROM choices WHERE choice=:choice AND postid=:postid", choice = "D", postid = topost[0]["id"])
+    winner = max(len(voteA), len(voteB), len(voteC), len(voteD))
+    if len(voteA) == winner:
+        winpost = voteA[0]["choiceText"]
+    elif len(voteB) == winner:
+        winpost = voteB[0]["choiceText"]
+    elif len(voteC) == winner:
+        winpost = voteC[0]["choiceText"]
+    else:
+        winpost = voteD[0]["choiceText"]
+
+    db.execute("UPDATE posts SET winchoice = :winchoice WHERE id = :postid", winchoice = winpost, postid = postid)
+
+    return redirect("/admin")
+
+    """

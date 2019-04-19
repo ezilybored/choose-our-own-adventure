@@ -137,9 +137,11 @@ def login():
         password=request.form.get("password")
         user = User.query.filter_by(user_name=username).first()
 
+        if not user:
+            return render_template("error.html", error = "username is incorrect")
         # Ensure username exists and password is correct using check_password_hash from werkzeug.security
         if not check_password_hash(user.password, password):
-            return render_template("error.html", error = "username or password are incorrect")
+            return render_template("error.html", error = "password is incorrect")
 
         session["user_id"] = user.user_id
 

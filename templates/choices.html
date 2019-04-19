@@ -14,7 +14,15 @@ main %}
       <tr>
         <td>{{ choice.Choice.date }}</td>
         <td>{{ choice.Choice.choice }}</td>
-        <td>{{ choice.Post.posttext }}</td>
+        {% if choice.Choice.choice == "A" %}
+        <td>{{ choice.Post.optionA }}</td>
+        {% endif %} {% if choice.Choice.choice == "B" %}
+        <td>{{ choice.Post.optionB }}</td>
+        {% endif %} {% if choice.Choice.choice == "C" %}
+        <td>{{ choice.Post.optionC }}</td>
+        {% endif %} {% if choice.Choice.choice == "D" %}
+        <td>{{ choice.Post.optionD }}</td>
+        {% endif %}
       </tr>
       {% endfor %}
     </tbody>

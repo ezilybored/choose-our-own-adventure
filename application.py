@@ -253,7 +253,7 @@ def choices():
     print("user: ", currentUser)
     page = request.args.get('page', 1, type=int)
     print("page: ", page)
-    paginate = 1
+    paginate = 5
     print("paginate: ", paginate)
     choicesmade = db.session.query(Choice, Post).outerjoin(Choice, Post.post_id == Choice.post_id).filter_by(user_id=currentUser).paginate(page, paginate, False)
     print("choices: ", choicesmade)
